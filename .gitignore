@@ -1,6 +1,5 @@
 .htaccess
 php53.cgi
-include/ost-config.php
 setup/cli/modules/importer
 *.sw[a-z]
 .DS_Store
@@ -17,3 +16,6 @@ stage
 # Ignore mPDF temp files
 include/mpdf/ttfontdata
 include/mpdf/tmp
+
+# Secrets
+.env
