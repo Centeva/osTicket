@@ -154,6 +154,7 @@ class StaffNav {
                     $subnav[]=array('desc'=>__('Dashboard'),'href'=>'dashboard.php','iconclass'=>'logs');
                     $subnav[]=array('desc'=>__('Agent Directory'),'href'=>'directory.php','iconclass'=>'teams');
                     $subnav[]=array('desc'=>__('My Profile'),'href'=>'profile.php','iconclass'=>'users');
+                    $subnav[]=array('desc'=>__('Ticket Report'),'href'=>'ticket-report.php','iconclass'=>'logs');
                     break;
                 case 'users':
                     $subnav[] = array('desc' => __('User Directory'), 'href' => 'users.php', 'iconclass' => 'teams');
