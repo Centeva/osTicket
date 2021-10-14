@@ -383,6 +383,10 @@ class Ticket {
                     'topicId'   =>  $this->getTopicId(),
                     'slaId' =>  $this->getSLAId(),
                     'user_id' => $this->getOwnerId(),
+					// 'createdate'	=> $this->getCreateDate()
+						// ? Format::userdate($cfg->getDateFormat(),
+							// Misc::db2gmtime($this->getCreateDate()))
+							// :'',
                     'duedate'   =>  $this->getDueDate()
                         ? Format::userdate($cfg->getDateFormat(),
                             Misc::db2gmtime($this->getDueDate()))
@@ -2091,6 +2095,11 @@ class Ticket {
         $fields=array();
         $fields['topicId']  = array('type'=>'int',      'required'=>1, 'error'=>__('Help topic selection is required'));
         $fields['slaId']    = array('type'=>'int',      'required'=>0, 'error'=>__('Select a valid SLA'));
+		
+		#START CREATEDATE - PJH 08/19/15
+		$fields['createdate']  = array('type'=>'date',     'required'=>1, 'error'=>__('Invalid date format - must be MM/DD/YY'));
+		#END CREATEDATE - PJH 08/19/15
+		
         $fields['duedate']  = array('type'=>'date',     'required'=>0, 'error'=>__('Invalid date format - must be MM/DD/YY'));
 
         $fields['note']     = array('type'=>'text',     'required'=>1, 'error'=>__('A reason for the update is required'));
@@ -2127,6 +2136,9 @@ class Ticket {
             .' ,topic_id='.db_input($vars['topicId'])
             .' ,sla_id='.db_input($vars['slaId'])
             .' ,source='.db_input($vars['source'])
+			#START CREATEDATE - PJH 08/19/15
+			.' ,created='.($vars['createdate']?db_input(date('Y-m-d G:i',Misc::dbtime($vars['createdate'].' '.$vars['createtime']))):'NULL')
+			#END CREATEDATE - PJH 08/19/15
             .' ,duedate='.($vars['duedate']?db_input(date('Y-m-d G:i',Misc::dbtime($vars['duedate'].' '.$vars['time']))):'NULL');
 
         if($vars['user_id'])
@@ -2456,7 +2468,10 @@ class Ticket {
             case 'staff':
                 $fields['deptId']   = array('type'=>'int',  'required'=>0, 'error'=>__('Department selection is required'));
                 $fields['topicId']  = array('type'=>'int',  'required'=>1, 'error'=>__('Help topic selection is required'));
-                $fields['duedate']  = array('type'=>'date', 'required'=>0, 'error'=>__('Invalid date format - must be MM/DD/YY'));
+				#START BLAH
+				$fields['createdate']  = array('type'=>'date', 'required'=>0, 'error'=>__('Invalid date format - must be MM/DD/YY'));
+                #END BLAH
+				$fields['duedate']  = array('type'=>'date', 'required'=>0, 'error'=>__('Invalid date format - must be MM/DD/YY'));
             case 'api':
                 $fields['source']   = array('type'=>'string', 'required'=>1, 'error'=>__('Indicate ticket source'));
                 break;
@@ -2659,8 +2674,10 @@ class Ticket {
 
         //We are ready son...hold on to the rails.
         $number = $topic ? $topic->getNewTicketNumber() : $cfg->getNewTicketNumber();
-        $sql='INSERT INTO '.TICKET_TABLE.' SET created=NOW() '
-            .' ,lastmessage= NOW()'
+        $sql='INSERT INTO '.TICKET_TABLE.' SET'
+			#.' created=NOW() '
+            #.' ,lastmessage=NOW()'
+            .' lastmessage=NOW()'
             .' ,user_id='.db_input($user->getId())
             .' ,`number`='.db_input($number)
             .' ,dept_id='.db_input($deptId)
@@ -2674,6 +2691,11 @@ class Ticket {
         //Make sure the origin is staff - avoid firebug hack!
         if($vars['duedate'] && !strcasecmp($origin,'staff'))
              $sql.=' ,duedate='.db_input(date('Y-m-d G:i',Misc::dbtime($vars['duedate'].' '.$vars['time'])));
+		
+		#START CREATEDATE - PJH 08/20/15
+		if($vars['createdate'] && !strcasecmp($origin,'staff'))
+             $sql.=' ,created='.db_input(date('Y-m-d G:i',Misc::dbtime($vars['createdate'].' '.$vars['createtime'])));
+		#END CREATEDATE - PJH 08/20/15
 
 
         if(!db_query($sql) || !($id=db_insert_id()) || !($ticket =Ticket::lookup($id)))
@@ -2802,7 +2824,8 @@ class Ticket {
 
         if(!$thisstaff || !$thisstaff->canCreateTickets()) return false;
 
-        if($vars['source'] && !in_array(strtolower($vars['source']),array('email','phone','other')))
+        #if($vars['source'] && !in_array(strtolower($vars['source']),array('email','phone','other')))
+        if($vars['source'] && !in_array(strtolower($vars['source']),array('email','phone','deskside','im','other')))
             $errors['source']=sprintf(__('Invalid source given - %s'),Format::htmlchars($vars['source']));
 
         if (!$vars['uid']) {

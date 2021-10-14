@@ -163,7 +163,7 @@ if ($_REQUEST['advsid'] && isset($_SESSION['adv_'.$_REQUEST['advsid']])) {
 $sortOptions=array('date'=>'effective_date','ID'=>'ticket.`number`*1',
     'pri'=>'pri.priority_urgency','name'=>'user.name','subj'=>'cdata.subject',
     'status'=>'status.name','assignee'=>'assigned','staff'=>'staff',
-    'dept'=>'dept.dept_name');
+    'dept'=>'dept.dept_name','organization'=>'ticket_org');
 
 $orderWays=array('DESC'=>'DESC','ASC'=>'ASC');
 

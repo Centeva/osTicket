@@ -63,10 +63,11 @@ if ($_POST)
             <td>
                 <select name="source">
                     <option value="" selected >&mdash; <?php echo __('Select Source');?> &mdash;</option>
-                    <option value="Phone" <?php echo ($info['source']=='Phone')?'selected="selected"':''; ?>><?php echo __('Phone');?></option>
+                    <option value="Deskside" <?php echo ($info['source']=='Deskside')?'selected="selected"':''; ?>><?php echo __('Deskside'); ?></option>
                     <option value="Email" <?php echo ($info['source']=='Email')?'selected="selected"':''; ?>><?php echo __('Email');?></option>
+                    <option value="IM" <?php echo ($info['source']=='IM')?'selected="selected"':''; ?>><?php echo __('IM');?></option>
+                    <option value="Phone" <?php echo ($info['source']=='Phone')?'selected="selected"':''; ?>><?php echo __('Phone');?></option>
                     <option value="Web"   <?php echo ($info['source']=='Web')?'selected="selected"':''; ?>><?php echo __('Web');?></option>
-                    <option value="API"   <?php echo ($info['source']=='API')?'selected="selected"':''; ?>><?php echo __('API');?></option>
                     <option value="Other" <?php echo ($info['source']=='Other')?'selected="selected"':''; ?>><?php echo __('Other');?></option>
                 </select>
                 &nbsp;<font class="error"><b>*</b>&nbsp;<?php echo $errors['source']; ?></font>
@@ -110,6 +111,34 @@ if ($_POST)
                 &nbsp;<font class="error">&nbsp;<?php echo $errors['slaId']; ?></font>
             </td>
         </tr>
+		
+		<!-- START CREATEDATE - PJH 08/19/15 -->
+		<tr>
+            <td width="160">
+                <?php 
+					echo __('Create Date');
+					$len = strlen(Format::db_datetime($ticket->getCreateDate()));
+					$strpos = strpos(Format::db_datetime($ticket->getCreateDate()), " ");
+					$createtime = substr(Format::db_datetime($ticket->getCreateDate()), 
+						$strpos, $len-$strpos);
+				?>:
+            </td>
+            <td>
+                <input class="dp" id="createdate" name="createdate" value="<?php echo Format::db_date($ticket->getCreateDate()); ?>" size="12" autocomplete=OFF>
+                &nbsp;&nbsp;
+				<?php
+                $min=$hr=null;				
+				if($ticket->getCreateDate())
+                    list($hr, $min)=explode(':', $createtime);
+					$hr = strpos($createtime, " pm")>0?$hr+12:$hr;
+                echo Misc::timeDropdown($hr, $min, 'createtime');
+                ?>				
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['duedate']; ?>&nbsp;<?php echo $errors['time']; ?></font>
+                <em><?php echo __('Time is based on your time zone');?> (GMT <?php echo $thisstaff->getTZoffset(); ?>)</em>
+            </td>
+        </tr>
+		<!-- END CREATEDATE - PJH 08/19/15 -->		
+		
         <tr>
             <td width="160">
                 <?php echo __('Due Date');?>:

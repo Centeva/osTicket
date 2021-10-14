@@ -1,0 +1,193 @@
+table {
+	border-spacing: 0;
+	border-collapse: collapse;
+	border: solid black 1px;
+}
+
+tr {
+	background-color: #fff;
+}
+
+h2{
+	color: #000;
+}
+
+.error {
+	color: red;
+}
+
+.leftTables {
+	background-color: #f5f5f5;
+	line-height: 25px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	width: 49%;
+	float: left;
+}
+
+.rightTables {
+	background-color: #f5f5f5;
+	line-height: 25px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	width: 49%;
+	float: right;
+}
+
+.closedByReqType {
+	/* background-color: #f5f5f5; */
+	padding: 2%;
+}
+
+	tr.tr0_1{
+		background-color: #7fd7f7;
+		font-weight: bold;
+	}
+	
+	tr.tr0_1_1{
+		background-color: #e5f7fd;
+		font-weight: bold;
+	}
+
+	tr.tr0_2:hover{
+		background: #e5f7fd;
+		color:#000;
+	}
+
+.closedBySite {
+	padding: 2%;
+}
+
+	tr.tr1_1{
+		background-color: #b797cf;
+		font-weight: bold;
+	}
+	
+	tr.tr1_1_1{
+		background-color: #e2d6ec;
+		font-weight: bold;
+	}
+
+	tr.tr1_2:hover{
+		background: #e2d6ec;
+		color:#000;
+	}
+
+.closedBySource {
+	padding: 2%;
+}
+
+	tr.tr2_1{
+		background-color: #d9d9d9;
+		font-weight: bold;
+	}
+	
+	tr.tr2_1_1{
+		background-color: #f2f2f2;
+		font-weight: bold;
+	}
+
+	tr.tr2_2:hover{
+		background: #f2f2f2;
+		color:#000;
+	}
+
+.closedByStaff {
+	padding: 2%;
+}
+
+	tr.tr3_1{
+		background-color: #bdd6ee;
+		font-weight: bold;
+	}
+	
+	tr.tr3_1_1{
+		background-color: #deeaf6;
+		font-weight: bold;
+	}
+
+	tr.tr3_2:hover{
+		background: #deeaf6;	
+		color:#000;
+	}
+
+.closeTimes {
+	padding: 2%;
+}
+
+	tr.tr4_1{
+		background-color: #ff7c80;
+		font-weight: bold;
+	}
+	
+	tr.tr4_1_1{
+		background-color: #ffcccc;
+		font-weight: bold;
+	}
+
+	tr.tr4_2:hover{
+		background: #ffcccc;	
+		color:#000;
+	}
+
+.escalated{
+	padding: 2%;
+}
+
+	tr.tr5_1{
+		background-color: #c5e0b3;
+		font-weight: bold;
+	}
+	
+	tr.tr5_1_1{
+		background-color: #e2efd9;
+		font-weight: bold;
+	}
+
+	tr.tr5_2:hover{
+		background: #e2efd9;	
+		color:#000;
+	}
+
+.custSubmitted{
+	padding: 2%;
+}
+
+	tr.tr6_1{
+		background-color: #ffe599;
+		font-weight: bold;
+	}
+	
+	tr.tr6_1_1{
+		background-color: #fff2cc;
+		font-weight: bold;
+	}
+
+	tr.tr6_2:hover{
+		background: #fff2cc;	
+		color:#000;
+	}
+	
+.hdrRow_1{
+	padding-bottom: 3%;
+}
+	
+.hdrDesc_1{
+	display: inline-block;
+	float: left;
+}
+
+.hdrDesc_2{
+	display: inline-block;
+	float: right;
+}
+
+.update-tickets_form	.ticket_num {
+	float: left;
+}
+
+.update-tickets_form	.close_dt {
+	float: right;
+}

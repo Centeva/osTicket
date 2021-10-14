@@ -1,4 +1,7 @@
 <?php
+
+require_once(INCLUDE_DIR.'class.myfunctions.php');
+
 if(!defined('OSTSCPINC') || !$thisstaff || !$thisstaff->canCreateTickets()) die('Access Denied');
 $info=array();
 $info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
@@ -18,6 +21,8 @@ if ($info['topicId'] && ($topic=Topic::lookup($info['topicId']))) {
 if ($_POST)
     $info['duedate'] = Format::date($cfg->getDateFormat(),
        strtotime($info['duedate']));
+	   
+	#$created = $form->getCreateDate();
 ?>
 <form action="tickets.php?a=open" method="post" id="save"  enctype="multipart/form-data">
  <?php csrf_token(); ?>
@@ -47,11 +52,18 @@ if ($_POST)
         if ($user) { ?>
         <tr><td><?php echo __('User'); ?>:</td><td>
             <div id="user-info">
+            
+            <?php 
+            	$org = Organization::lookup($orgid); 
+            	echo $org;	
+            ?>
+            
                 <input type="hidden" name="uid" id="uid" value="<?php echo $user->getId(); ?>" />
             <a href="#" onclick="javascript:
                 $.userLookup('ajax.php/users/<?php echo $user->getId(); ?>/edit',
                         function (user) {
                             $('#user-name').text(user.name);
+                            $('#user-email').text(user.email);
                             $('#user-email').text(user.email);
                         });
                 return false;
@@ -118,92 +130,49 @@ if ($_POST)
             </td>
             <td>
                 <select name="source">
-                    <option value="Phone" selected="selected"><?php echo __('Phone'); ?></option>
-                    <option value="Email" <?php echo ($info['source']=='Email')?'selected="selected"':''; ?>><?php echo __('Email'); ?></option>
+                    <option value="Deskside" <?php echo ($info['source']=='Deskside')?'selected="selected"':''; ?>><?php echo __('Deskside'); ?></option>
+                    <option value="Email" <?php echo ($info['source']=='Email')?'selected="selected"':''; ?> selected="selected"><?php echo __('Email'); ?></option>
+                    <option value="IM" <?php echo ($info['source']=='IM')?'selected="selected"':''; ?>><?php echo __('IM'); ?></option>
+                    <option value="Phone" <?php echo ($info['source']=='Phone')?'selected="selected"':''; ?>><?php echo __('Phone'); ?></option>
                     <option value="Other" <?php echo ($info['source']=='Other')?'selected="selected"':''; ?>><?php echo __('Other'); ?></option>
                 </select>
                 &nbsp;<font class="error"><b>*</b>&nbsp;<?php echo $errors['source']; ?></font>
             </td>
         </tr>
-        <tr>
-            <td width="160" class="required">
-                <?php echo __('Help Topic'); ?>:
+
+        <!-- START HIDDEN INPUT FIELDS -->
+        <input type="hidden" name="deptId" value="1"  />
+        <input type="hidden" name="topicId" value="1"  />
+        <input type="hidden" name="slaId" value="1"  />
+        <!-- END HIDDEN INPUT FIELDS -->
+		
+		<!-- Modifies class.ticket.php lines 386*, 2100, 2140, 2473, 2678, 2699 -->
+		<!-- START CREATEDATE - PJH 08/19/15 -->
+		<tr>
+            <td width="160">
+                <?php 
+					echo __('Create Date');
+					$date = date('m/d/Y');
+					$time = date('H') - 6 . ":" . date('i:s');
+				?>:
             </td>
             <td>
-                <select name="topicId" onchange="javascript:
-                        var data = $(':input[name]', '#dynamic-form').serialize();
-                        $.ajax(
-                          'ajax.php/form/help-topic/' + this.value,
-                          {
-                            data: data,
-                            dataType: 'json',
-                            success: function(json) {
-                              $('#dynamic-form').empty().append(json.html);
-                              $(document.head).append(json.media);
-                            }
-                          });">
-                    <?php
-                    if ($topics=Topic::getHelpTopics()) {
-                        if (count($topics) == 1)
-                            $selected = 'selected="selected"';
-                        else { ?>
-                        <option value="" selected >&mdash; <?php echo __('Select Help Topic'); ?> &mdash;</option>
-<?php                   }
-                        foreach($topics as $id =>$name) {
-                            echo sprintf('<option value="%d" %s %s>%s</option>',
-                                $id, ($info['topicId']==$id)?'selected="selected"':'',
-                                $selected, $name);
-                        }
-                        if (count($topics) == 1 && !$form) {
-                            if (($T = Topic::lookup($id)))
-                                $form =  $T->getForm();
-                        }
-                    }
-                    ?>
-                </select>
-                &nbsp;<font class="error"><b>*</b>&nbsp;<?php echo $errors['topicId']; ?></font>
+                <input class="dp" id="createdate" name="createdate" value="<?php echo $date ?>" size="12" autocomplete=OFF>
+                &nbsp;&nbsp;
+                <?php
+                $min=$hr=null;
+				if($time)
+                    list($hr, $min)=explode(':', $time);
+                echo Misc::timeDropdown($hr, $min, 'createtime');
+                ?>
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['duedate']; ?> &nbsp; <?php echo $errors['time']; ?></font>
+                <em><?php echo __('Time is based on your time zone');?> (GMT <?php echo $thisstaff->getTZoffset(); ?>)</em>
+				
+				<?php echo $date.' '.$time; ?>
             </td>
         </tr>
-        <tr>
-            <td width="160">
-                <?php echo __('Department'); ?>:
-            </td>
-            <td>
-                <select name="deptId">
-                    <option value="" selected >&mdash; <?php echo __('Select Department'); ?>&mdash;</option>
-                    <?php
-                    if($depts=Dept::getDepartments()) {
-                        foreach($depts as $id =>$name) {
-                            echo sprintf('<option value="%d" %s>%s</option>',
-                                    $id, ($info['deptId']==$id)?'selected="selected"':'',$name);
-                        }
-                    }
-                    ?>
-                </select>
-                &nbsp;<font class="error"><?php echo $errors['deptId']; ?></font>
-            </td>
-        </tr>
-
-         <tr>
-            <td width="160">
-                <?php echo __('SLA Plan');?>:
-            </td>
-            <td>
-                <select name="slaId">
-                    <option value="0" selected="selected" >&mdash; <?php echo __('System Default');?> &mdash;</option>
-                    <?php
-                    if($slas=SLA::getSLAs()) {
-                        foreach($slas as $id =>$name) {
-                            echo sprintf('<option value="%d" %s>%s</option>',
-                                    $id, ($info['slaId']==$id)?'selected="selected"':'',$name);
-                        }
-                    }
-                    ?>
-                </select>
-                &nbsp;<font class="error">&nbsp;<?php echo $errors['slaId']; ?></font>
-            </td>
-         </tr>
-
+		<!-- END CREATEDATE - PJH 08/19/15 -->
+		
          <tr>
             <td width="160">
                 <?php echo __('Due Date');?>:
@@ -233,10 +202,16 @@ if ($_POST)
                     <?php
                     if(($users=Staff::getAvailableStaffMembers())) {
                         echo '<OPTGROUP label="'.sprintf(__('Agents (%d)'), count($users)).'">';
+                        
                         foreach($users as $id => $name) {
                             $k="s$id";
-                            echo sprintf('<option value="%s" %s>%s</option>',
-                                        $k,(($info['assignId']==$k)?'selected="selected"':''),$name);
+                            // SELECT LIST OPTIONS - ADDED DEFAULT SELECT TO THE CURRENT USER
+                            if ($thisstaff==$name) {
+	                            echo sprintf('<option value="%s" selected="selected">%s</option>',$k,$name);
+                            } else {
+                            	echo sprintf('<option value="%s" %s>%s</option>',
+                            			$k,(($info['assignId']==$k)?'selected="selected"':''),$name);
+                            }
                         }
                         echo '</OPTGROUP>';
                     }
@@ -329,7 +304,8 @@ print $response_form->getField('attachments')->render();
                     foreach (TicketStatusList::getStatuses(
                                 array('states' => $states)) as $s) {
                         if (!$s->isEnabled()) continue;
-                        $selected = ($statusId == $s->getId());
+                        $selected = (3 == $s->getId());
+//                         $selected = ($statusId == $s->getId());
                         echo sprintf('<option value="%d" %s>%s</option>',
                                 $s->getId(),
                                 $selected
@@ -417,11 +393,13 @@ $(function() {
     // Popup user lookup on the initial page load (not post) if we don't have a
     // user selected
     if (!$_POST && !$user) {?>
-    setTimeout(function() {
-      $.userLookup('ajax.php/users/lookup/form', function (user) {
-        window.location.href = window.location.href+'&uid='+user.id;
-      });
-    }, 100);
+/* START CONTACT LOOKUP POPUP */
+//    setTimeout(function() {
+//      $.userLookup('ajax.php/users/lookup/form', function (user) {
+//        window.location.href = window.location.href+'&uid='+user.id;
+//      });
+//    }, 100);
+/* END CONTACT LOOKUP POPUP */
     <?php
     } ?>
 });
