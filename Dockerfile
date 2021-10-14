@@ -16,14 +16,14 @@ ENV SALT='1234567890'
 
 RUN apt-get update -y && apt-get install -yf cron libpng-dev libc-client-dev libkrb5-dev libicu-dev && \
     pecl channel-update pecl.php.net && \
-    pecl install apcu && \
+#    pecl install apcu && \
     rm -r /var/lib/apt/lists/*  && \
     docker-php-ext-install mysqli && \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl && docker-php-ext-install imap && \
     docker-php-ext-install gd && \
     docker-php-ext-configure intl && \
     docker-php-ext-install intl && \
-    docker-php-ext-enable apcu && \
+#    docker-php-ext-enable apcu && \
     docker-php-ext-install opcache
 
 ARG OST_ROOT=/var/www/html
