@@ -42,7 +42,7 @@ services:
 #####               osTicket                 #####
 ##################################################
   osticket:
-    image: unitely/osticket:latest
+    image: centeva/osticket:latest
     hostname: osticket
     restart: unless-stopped
     depends_on: 

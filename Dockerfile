@@ -1,10 +1,10 @@
-# docker build -t unitely/osticket:latest .
-# docker run -d -p 80:80 --name unitely_osticket unitely/osticket
+# docker build -t centeva/osticket:latest .
+# docker run -d -p 80:80 --name centeva_osticket centeva/osticket
 
-FROM php:7.4-apache
+FROM php:5-apache
 
 # Maintainer
-MAINTAINER Patrick Hewes "patrick.hewes@unite.ly"
+MAINTAINER Patrick Hewes "patrick.hewes@centeva.com"
 
 ENV ADMIN_EMAIL='support@email.com'
 ENV DBHOST='database'

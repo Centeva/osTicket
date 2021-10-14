@@ -18,4 +18,4 @@ include/mpdf/ttfontdata
 include/mpdf/tmp
 
 # Secrets
-.env
+*.env
