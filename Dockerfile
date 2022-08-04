@@ -31,6 +31,7 @@ RUN rm -rf $OST_ROOT/*
 
 COPY . $OST_ROOT
 COPY start.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/start.sh
 
 RUN rm -rf $OST_ROOT/setup
 
