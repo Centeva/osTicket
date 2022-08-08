@@ -462,7 +462,7 @@ memory_limit = 128M
 ; Development Value: E_ALL
 ; Production Value: E_ALL & ~E_DEPRECATED & ~E_STRICT
 ; http://php.net/error-reporting
-error_reporting = E_ALL
+error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT
 
 ; This directive controls whether or not and where PHP will output errors,
 ; notices and warnings too. Error output is very useful during development, but
@@ -479,7 +479,7 @@ error_reporting = E_ALL
 ; Development Value: On
 ; Production Value: Off
 ; http://php.net/display-errors
-display_errors = On
+display_errors = Off
 
 ; The display of errors which occur during PHP's startup sequence are handled
 ; separately from display_errors. PHP's default behavior is to suppress those
@@ -490,7 +490,7 @@ display_errors = On
 ; Development Value: On
 ; Production Value: Off
 ; http://php.net/display-startup-errors
-display_startup_errors = On
+display_startup_errors = Off
 
 ; Besides displaying errors, PHP can also log errors to locations such as a
 ; server-specific log, STDERR, or a location specified by the error_log
@@ -918,12 +918,12 @@ default_socket_timeout = 60
 ;extension=gd2
 ;extension=gettext
 ;extension=gmp
-extension=intl
-extension=imap
+;extension=intl
+;extension=imap
 ;extension=ldap
 ;extension=mbstring
 ;extension=exif      ; Must be after mbstring as it depends on it
-extension=mysqli
+;extension=mysqli
 ;extension=oci8_12c  ; Use with Oracle Database 12c Instant Client
 ;extension=odbc
 ;extension=openssl
