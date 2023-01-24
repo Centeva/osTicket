@@ -1,7 +1,7 @@
 # docker build -t unitely/osticket:latest .
 # docker run -d -p 80:80 --name unitely_osticket unitely/osticket
 
-FROM php:7.4-apache
+FROM php:8.1-apache
 
 ENV ADMIN_EMAIL='support@email.com'
 ENV DBHOST='database'
