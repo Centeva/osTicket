@@ -160,8 +160,8 @@ class AttachmentFile extends VerySimpleModel {
     function display($scale=false, $ttl=86400) {
         $this->makeCacheable($ttl);
 
-        if ($scale && extension_loaded('gd')) {
-            $image = imagecreatefromstring($this->getData());
+        if ($scale && extension_loaded('gd')
+                && ($image = imagecreatefromstring($this->getData()))) {
             $width = imagesx($image);
             if ($scale <= $width) {
                 $height = imagesy($image);
@@ -207,7 +207,7 @@ class AttachmentFile extends VerySimpleModel {
     function getExternalDownloadUrl($options=array()) {
         global $cfg;
 
-        $download = self::getDownloadUrl($options);
+        $download = $this->getDownloadUrl($options);
         // Separate URL handle and args
         list($handle, $args) = explode('file.php?', $download);
 
@@ -284,7 +284,7 @@ class AttachmentFile extends VerySimpleModel {
         exit();
     }
 
-    function _getKeyAndHash($data=false, $file=false) {
+    static function _getKeyAndHash($data=false, $file=false) {
         if ($file) {
             $sha1 = base64_encode(sha1_file($data, true));
             $md5 = base64_encode(md5_file($data, true));
@@ -477,9 +477,11 @@ class AttachmentFile extends VerySimpleModel {
                 elseif ($bk->write($file['data']) && $bk->flush()) {
                     $succeeded = true; break;
                 }
-            }
-            catch (Exception $e) {
+            } catch (Throwable $t) {
                 // Try next backend
+                // Backends can throw an exception or error.
+                // TODO: Log any exceptions and errors for debugging
+                // purposes.
             }
             // Fallthrough to default backend if different?
         }
@@ -610,9 +612,16 @@ class AttachmentFile extends VerySimpleModel {
     static function lookupByHash($hash) {
         if (isset(static::$keyCache[$hash]))
             return static::$keyCache[$hash];
-
         // Cache a negative lookup if no such file exists
-        return parent::lookup(array('key' => $hash));
+        try {
+            return parent::lookup(array('key' => $hash));
+        } catch (ObjectNotUnique $e) {
+            // TODO: Figure out why key collission might be happening AND
+            // make key (hash) unique field in the file table as a
+            // protection measure. For now we're returning null to avoid possible wrong file
+            // being displayed.
+            return null;
+        }
     }
 
     static function lookup($id) {
@@ -624,7 +633,7 @@ class AttachmentFile extends VerySimpleModel {
     /*
       Method formats http based $_FILE uploads - plus basic validation.
      */
-    function format($files) {
+    static function format($files) {
         global $ost;
 
         if(!$files || !is_array($files))

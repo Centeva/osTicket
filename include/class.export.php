@@ -322,7 +322,7 @@ static function departmentMembers($dept, $agents, $filename='', $how='csv') {
     exit;
   }
 
-  static function audits($type, $filename='', $tableInfo='', $object='', $how='csv', $show_viewed=true, $data=array(), CsvExporter $exporter) {
+  static function audits($type, ?string $filename=null, ?string $tableInfo=null, ?string $object=null, ?string $how='csv', ?bool $show_viewed=true, ?array $data=array(), CsvExporter $exporter) {
       $headings = array('Description', 'Timestamp', 'IP');
       switch ($type) {
           case 'audit':
@@ -535,7 +535,7 @@ abstract class  Exporter {
                 || !($email=$cfg->getDefaultEmail()))
             return false;
 
-        $mailer = new Mailer($email);
+        $mailer = new osTicket\Mail\Mailer($email);
         $mailer->addFileObject($file);
         $subject = __("Export");
         $body = __("Attached is file containing the export you asked us to send you!");
@@ -680,7 +680,7 @@ class ResultSetExporter {
                 }
             }
             // Evalutate :: function call on target current
-            if ($func && (method_exists($current, $func) || method_exists($current, '__call'))) {
+            if (($current && $func) && (method_exists($current, $func) || method_exists($current, '__call'))) {
                 $current = $current->{$func}();
             }
 
@@ -743,12 +743,11 @@ class CsvResultsExporter extends ResultSetExporter {
 class JsonResultsExporter extends ResultSetExporter {
     function dump() {
         require_once(INCLUDE_DIR.'class.json.php');
-        $exp = new JsonDataEncoder();
         $rows = array();
         while ($row=$this->nextArray()) {
             $rows[] = $row;
         }
-        echo $exp->encode($rows);
+        echo JsonDataEncoder::encode($rows);
     }
 }
 

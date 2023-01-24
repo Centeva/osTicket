@@ -116,7 +116,11 @@ function db_version() {
 }
 
 function db_timezone() {
-    return db_get_variable('system_time_zone', 'global');
+    $timezone = db_get_variable('time_zone', 'global');
+    if ($timezone == 'SYSTEM')
+        $timezone = db_get_variable('system_time_zone', 'global');
+
+    return $timezone;
 }
 
 function db_get_variable($variable, $type='session') {
@@ -185,8 +189,10 @@ function db_query($query, $logError=true, $buffered=true) {
 
     $tries = 3;
     do {
-        $res = $__db->query($query,
-            $buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
+        try {
+            $res = $__db->query($query,
+                $buffered ? MYSQLI_STORE_RESULT : MYSQLI_USE_RESULT);
+        } catch (mysqli_sql_exception $e) {}
         // Retry the query due to deadlock error (#1213)
         // TODO: Consider retry on #1205 (lock wait timeout exceeded)
         // TODO: Log warning
