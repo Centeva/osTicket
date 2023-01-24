@@ -31,14 +31,13 @@ class Config {
     var $defaults = array();                # List of default values
 
     function __construct($section=null, $defaults=array()) {
+        if ($defaults)
+            $this->defaults = $defaults;
         if ($section)
             $this->section = $section;
-
         if ($this->section === null)
             return false;
 
-        if ($defaults)
-            $this->defaults = $defaults;
 
         if (isset($_SESSION['cfg:'.$this->section]))
             $this->session = &$_SESSION['cfg:'.$this->section];
@@ -62,6 +61,10 @@ class Config {
         return $info;
     }
 
+    function toArray() {
+        return $this->getInfo();
+    }
+
     function get($key, $default=null) {
         if (isset($this->session) && isset($this->session[$key]))
             return $this->session[$key];
@@ -74,7 +77,12 @@ class Config {
     }
 
     function exists($key) {
-        return $this->get($key, null) ? true : false;
+        if ((isset($this->session) && array_key_exists($key, $this->session))
+                || array_key_exists($key, $this->config)
+                || array_key_exists($key, $this->defaults))
+            return true;
+
+        return false;
     }
 
     function set($key, $value) {
@@ -187,7 +195,7 @@ extends VerySimpleModel {
             ))->delete();
     }
 
-    function getConfigsByNamespace($namespace=false, $key, $value=false) {
+    static function getConfigsByNamespace(?string $namespace=null, $key, $value=false) {
         $filter = array();
 
          $filter['key'] = $key;
@@ -659,12 +667,15 @@ class OsticketConfig extends Config {
         return $this->alertEmail;
     }
 
-    function getDefaultSMTPEmail() {
+    function getDefaultSmtpAccount() {
+        if (!$this->defaultSmtpAccount && $this->get('default_smtp_id'))
+            $this->defaultSmtpAccount = SmtpAccount::lookup($this->get('default_smtp_id'));
 
-        if(!$this->defaultSMTPEmail && $this->get('default_smtp_id'))
-            $this->defaultSMTPEmail = Email::lookup($this->get('default_smtp_id'));
+        return $this->defaultSmtpAccount;
+    }
 
-        return $this->defaultSMTPEmail;
+    function getDefaultMTA() {
+        return $this->getDefaultSmtpAccount();
     }
 
     function getDefaultPriorityId() {
@@ -1778,7 +1789,7 @@ class OsticketConfig extends Config {
     }
 
     //Used to detect version prior to 1.7 (useful during upgrade)
-    /* static */ function getDBVersion() {
+    static function getDBVersion() {
         $sql='SELECT `ostversion` FROM '.TABLE_PREFIX.'config '
             .'WHERE id=1';
         return db_result(db_query($sql));

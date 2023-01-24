@@ -185,9 +185,13 @@ class Validator {
         // full-stop trailing char so that the default domain of the server
         // is not added automatically
         if ($verify and !dns_get_record($m->host.'.', DNS_MX))
-            return 0 < @count(dns_get_record($m->host.'.', DNS_A|DNS_AAAA));
+            return (count(dns_get_record($m->host.'.', DNS_A|DNS_AAAA) ?: []));
 
         return true;
+    }
+
+    static function is_emailish($email) {
+        return (preg_match('/(.*@.{2,})|(.{2,}@.*)/', $email));
     }
 
     static function is_numeric($number, &$error='') {
@@ -233,7 +237,7 @@ class Validator {
     }
 
     static function is_formula($text, &$error='') {
-        if (!preg_match('/^[^=\+@-].*$/s', $text))
+        if (!preg_match('/(^[^=\+@-].*$)|(^\+\d+$)/s', $text))
             $error = __('Content cannot start with the following characters: = - + @');
         return $error == '';
     }
@@ -340,7 +344,7 @@ class Validator {
         return true;
     }
 
-    function process($fields,$vars,&$errors){
+    static function process($fields,$vars,&$errors){
 
         $val = new Validator();
         $val->setFields($fields);
@@ -350,7 +354,7 @@ class Validator {
         return (!$errors);
     }
 
-    function check_acl($backend) {
+    static function check_acl($backend) {
         global $cfg;
 
         $acl = $cfg->getACL();

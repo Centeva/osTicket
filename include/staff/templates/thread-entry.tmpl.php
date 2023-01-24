@@ -16,7 +16,7 @@ if ($user && $cfg->isAvatarsEnabled())
 
 ?>
 <div class="thread-entry <?php
-    echo $entry->isSystem() ? 'system' : $entryTypes[$entry->type]; ?> <?php if ($avatar) echo 'avatar'; ?>">
+    echo $entry->isSystem() ? 'system' : $entryTypes[$entry->type]; ?> <?php if ($avatar) echo 'avatar'; ?>" style="position:relative">
 <?php if ($avatar) { ?>
     <span class="<?php echo ($entry->type == 'M') ? 'pull-right' : 'pull-left'; ?> avatar">
 <?php echo $avatar; ?>
@@ -82,7 +82,7 @@ if ($user && $cfg->isAvatarsEnabled())
             )
         ); ?>
         <span style="max-width:400px" class="faded title truncate"><?php
-            echo $entry->title; ?></span>
+            echo $entry->title; ?>
         </span>
     </div>
     <div class="thread-body no-pjax">

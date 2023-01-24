@@ -1466,7 +1466,6 @@ h3.title > .sub-title {
 }
 
 .ticket_info {
-    #background:#F4FAFF;
     background:#f2ffec;
 }
 
@@ -1590,11 +1589,9 @@ img.avatar {
 }
 
 .thread-entry.message .header {
-    #background:#C3D9FF;
     background:#a8e88c;
 }
 .thread-entry.avatar.message .header:after {
-    #border-left: 7px solid #C3D9FF;
     border-left: 7px solid #a8e88c;
     margin-right: 1px;
 }
@@ -2259,6 +2256,10 @@ time.faq {
     width:750px !important;
 }
 
+.dialog.size-xl {
+    width:940px !important;
+}
+
 .dialog #popup-loading {
     position:absolute;
     text-align:center;
@@ -2568,10 +2569,17 @@ button[type=submit], input[type="submit"], .primary.button {
 }
 
 .save.pending {
-  #background-color: rgba(255, 174, 0, 0.63);
-  #box-shadow: 0 0 0 2px rgba(255, 174, 0, 1) inset;
   background-color: rgba(63, 207, 0, 0.63);
   box-shadow: 0 0 0 2px rgba(63, 207, 0, 1) inset;
+}
+.save.pending:hover {
+  box-shadow: 0 0 0 2px rgba(63, 207, 0, 1) inset;
+  background-color: rgba(63, 207, 0, 0.79);
+  color: black;
+}
+
+.save.success {
+  background-color: rgba(22, 109, 82, 0.63);
 }
 
 .button:hover, .button:active,
@@ -2596,13 +2604,6 @@ button[type=submit]:disabled, input[type=submit]:disabled {
   opacity: 0.6;
 }
 
-.save.pending:hover {
-  #box-shadow: 0 0 0 2px rgba(242, 165, 0, 1) inset;
-  #background-color: rgba(255, 174, 0, 0.79);
-  box-shadow: 0 0 0 2px rgba(63, 207, 0, 1) inset;
-  background-color: rgba(63, 207, 0, 0.79);
-  color: black;
-}
 
 input[type=button].small, .small.button, input[type=submit].small {
   font-size: 0.8em;
