@@ -1,6 +1,8 @@
-# docker-compose --env-file unitely.env up -d
-# docker-compose down
-
+# To run only the application external services:
+# docker-compose up
+#
+# To build the osTicket image and run it alongside services:
+# docker-compose --profile app up --build
 version: '3.9'
 
 services:

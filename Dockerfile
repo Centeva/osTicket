@@ -26,6 +26,9 @@ RUN pecl channel-update pecl.php.net && \
     docker-php-ext-enable apcu && \
     docker-php-ext-install opcache
 
+# Apache module needed for OAuth API endpoints
+RUN a2enmod rewrite
+
 ARG OST_ROOT=/var/www/html
 
 COPY ./php.ini-development $PHP_INI_DIR/php.ini
